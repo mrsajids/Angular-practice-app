@@ -1,27 +1,86 @@
 # DemoApp2
+1. create a new project
+    ng new project-name
+    
 
-This project was generated with [Angular CLI](https://github.com/angular/angular-cli) version 18.0.4.
+2. create app module
+    create: app-routing.module.ts
+    	import { NgModule } from '@angular/core';
+	import { RouterModule, Routes } from '@angular/router';
 
-## Development server
+	const routes: Routes = [];
+	@NgModule({
+  	imports: [RouterModule.forChild(routes)],
+  	exports: [RouterModule]
+	})
+	export class LayoutRoutingModule { }
+	
+	
 
-Run `ng serve` for a dev server. Navigate to `http://localhost:4200/`. The application will automatically reload if you change any of the source files.
+3. create: app.module.ts
+    	import { NgModule } from '@angular/core';
+	import { CommonModule } from '@angular/common';
+	import { LayoutRoutingModule } from './layout-routing.module';
+	import { LayoutComponent } from './layout/layout.component';
+	import { HeaderComponent } from './header/header.component';
+	@NgModule({
+  		declarations: [LayoutComponent, HeaderComponent],
+  		imports: [CommonModule, LayoutRoutingModule],
+	})
+	export class LayoutModule {}
 
-## Code scaffolding
 
-Run `ng generate component component-name` to generate a new component. You can also use `ng generate directive|pipe|service|class|guard|interface|enum|module`.
+4. update: main.ts
+    platformBrowserDynamic().bootstrapModule(AppModule).catch((err) => {});
+    RESTART APP**
 
-## Build
 
-Run `ng build` to build the project. The build artifacts will be stored in the `dist/` directory.
+5. create layout module
+    app > ng g m layout --routing
+    app > cd layout > ng g c layout 
 
-## Running unit tests
+    app> ng g c header
+    update: layoutmodule: 
+    declarations: [
+        LayoutComponent,
+        HeaderComponent
+      ],
+      imports: [
+        CommonModule,
+        LayoutRoutingModule
+      ]
 
-Run `ng test` to execute the unit tests via [Karma](https://karma-runner.github.io).
-
-## Running end-to-end tests
-
-Run `ng e2e` to execute the end-to-end tests via a platform of your choice. To use this command, you need to first add a package that implements end-to-end testing capabilities.
-
-## Further help
-
-To get more help on the Angular CLI use `ng help` or go check out the [Angular CLI Overview and Command Reference](https://angular.dev/tools/cli) page.
+      update:layoutcomponent:
+            <app-header></app-header>
+                    <p>layout works!</p>
+            <router-outlet></router-outlet>
+            
+            
+ 6. update: app-routing.module.ts
+       import { NgModule } from '@angular/core';
+      import { RouterModule, Routes } from '@angular/router';
+      import { LayoutComponent } from './layout/layout/layout.component';
+      
+      const routes: Routes = [
+        {
+          path: '',
+          component: LayoutComponent,
+          children: [
+            {
+              path: '',
+              loadChildren: () =>
+                import('./layout/layout.module').then((m) => m.LayoutModule),
+            },
+          ],
+        },
+      ];
+      @NgModule({
+        imports: [RouterModule.forRoot(routes, { useHash: true })],
+        exports: [RouterModule],
+      })
+      export class AppRoutingModule {}
+      
+      
+  7. Remove standalone property
+  	remove standalone : true
+  	remove imports:[]
